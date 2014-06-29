@@ -1,0 +1,26 @@
+{
+    "name": "ScrumSamServer",
+    "description": "",
+    "version": "0.0.1",
+    "main": "./ScrumSamServer.js",
+    "dependencies": {
+        "express": "latest",
+        "jade": "latest",
+        "mongoskin": "latest"
+    },
+    "author": {
+        "name": "Matthieu Rouget",
+        "email": "matthieu.rouget@laposte.net"
+    },
+    "keywords": [],
+    "licenses": {
+        "type": "none"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/m-rouget/ScrumSamServer.git"
+    },
+    "bugs": {
+        "url": "http://github.com/m-rouget/ScrumSamServer/issues"
+    }
+}
