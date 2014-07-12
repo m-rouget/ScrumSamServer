@@ -6,7 +6,11 @@
     "dependencies": {
         "express": "latest",
         "jade": "latest",
-        "mongoskin": "latest"
+        "mongoskin": "latest",
+        "body-parser": "latest",
+        "mocha": "latest",
+        "should": "latest",
+        "expect.js": "latest"
     },
     "author": {
         "name": "Matthieu Rouget",

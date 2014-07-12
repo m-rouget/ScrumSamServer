@@ -2,27 +2,44 @@ extends layout
 
 block content
     h1= title
-    p This is ScrumSam !
 
     // Wrapper
     #wrapper
 
-        // USER LIST
+        // ScrumSam user list
         h2 User List
-        #userList
+        #userList(ng-controller="UsersCtrl")
+            p 
+              span: a(href="" ng-click="createRandom()") Create random item
             table
                 thead
-                    th UserName
+                    //th
+                    th Name
                     th Email
                     th Delete?
                 tbody
-        // /USER LIST
+                  tr(ng-repeat="user in users")
+                    //th
+                    //  input(type="checkbox", ng_model="user.checked")
+                    td 
+                      a(ng-href="{{user.link}}") {{user.name}} 
+                    td {{user.email}}
+                    td
+                      a(href="" ng-click="delete(user)") delete
+            p Status: {{message}}
+        // /ScrumSam user list
 
-    // /WRAPPER
 
-    div
-        label Name:
-        input(type="text" ng-model="yourName" placeholder="Enter a name here")
-        hr
-        h1 Hello {{yourName}}
+    // /Wrapper
+
+    //div
+    //    label Name:
+    //    input(type="text" ng-model="yourName" placeholder="Enter a name here")
+    //    hr
+    //    h1 Hello {{yourName}}
+
+
+        
+        
+
 
