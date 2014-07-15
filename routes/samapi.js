@@ -13,9 +13,11 @@ var router = express.Router();
 router.get('/users', function(req, res) {
   var db = req.db;
   db.collection('samUsers').find().toArray(function(err, items) {
-    items.forEach(function(item) {
-      item.link = "/api" + req.path + "/" + item._id;
-    });
+    if (items) {
+      items.forEach(function(item) {
+        item.link = "/api" + req.path + "/" + item._id;
+      });
+    }
     res.json(items);
   });
 });
@@ -57,7 +59,7 @@ router.delete('/users/:id', function(req, res, next) {
       return next(err);
     }
   });
-  
+
   res.json(true);
 });
 
