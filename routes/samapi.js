@@ -7,39 +7,54 @@
 var express = require('express');
 var router = express.Router();
 
-/*
- * GET userlist.
- */
+// ----------------------------------------------------------------------------
+// Top level user list operation
+// ----------------------------------------------------------------------------
+
 router.get('/users', function(req, res) {
   var db = req.db;
   db.collection('samUsers').find().toArray(function(err, items) {
     if (items) {
       items.forEach(function(item) {
-        item.link = "/api" + req.path + "/" + item._id;
+        // UGLY UGLY UGLY UGLY UGLY UGLY UGLY UGLY UGLY
+        // Comes from http://stackoverflow.com/questions/10183291/how-to-get-the-full-url-in-express-js
+        item.link = req.protocol + "://" + req.get('host')+"/api" + req.path + "/" + item._id;
       });
     }
     res.json(items);
   });
 });
 
+// POST : create a new user
 router.post('/users', function(req, res) {
-
   var item = {
     'email': req.body.email,
     'name': req.body.name
   };
 
-
   var db = req.db;
-
   db.collection('samUsers').insert(item, {}, function(err, result) {
     if (err)
       return next(err);
-    res.send(result);
+    res.send(201);
   });
 });
 
+// DELETE : clear the whole user list
+router.delete('/users', function(req, res) {
+  var db = req.db;
+  db.collection('samUsers').remove(function(err, result) {
+    if (err)
+      return next(err);
+    
+    console.log("DELETE /users. Deleted "+result+" users");
+    res.send(200);
+  });
+});
 
+// ----------------------------------------------------------------------------
+// Individial users operations
+// ----------------------------------------------------------------------------
 router.get('/users/:id', function(req, res, next) {
   var db = req.db;
   db.collection('samUsers').findById(req.params.id, function(err, result) {
@@ -49,7 +64,7 @@ router.get('/users/:id', function(req, res, next) {
     }
     res.json(result);
   });
-});
+})
 
 router.delete('/users/:id', function(req, res, next) {
   var db = req.db;

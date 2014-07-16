@@ -40,6 +40,36 @@ module.exports = function() {
     });
   };
 
+  var createUser = function(callback, user) {
+    request({
+      url: url,
+      method: 'POST',
+      json: true,
+      body: user
+    }, function(error, response, body) {
+      if (error)
+        callback.fail(new Error("POST failed: " + url));
+      else if (response.statusCode === 201)
+        callback();
+      else
+        callback.fail(new Error("POST failed (" + response.statusCode + "): " + url));
+    });
+  };
+
+  var deleteUser = function(callback, userUrl) {
+    request({
+      url: userUrl,
+      method: 'DELETE'
+    }, function(error, response, body) {
+      if (error)
+        callback.fail(new Error("DELETE failed: " + userUrl));
+      else if (response.statusCode === 200)
+        callback();
+      else
+        callback.fail(new Error("DELETE failed (" + response.statusCode + "): " + userUrl));
+    });
+  };
+
   this.Given(/^an user list with at least (\d+) user$/, function(arg1, callback) {
     getUserList(callback, function(users) {
       if (users.length >= arg1)
@@ -55,7 +85,7 @@ module.exports = function() {
 
   this.Then(/^the list contains (\d+) elements$/, function(arg1, callback) {
     getUserList(callback, function(users) {
-      if (users.length === arg1)
+      if (users.length == arg1) // Legitimate ==
         callback();
       else
         callback.fail(new Error("Expected an user list with " + arg1 + " items, got " + users.length));
@@ -67,26 +97,32 @@ module.exports = function() {
       if (users.length === 0)
         callback();
       else
-        callback.fail(new Error("Expected an empty user list, got " + users.length));
+        clearUserList(callback);
     });
   });
 
   this.Given(/^an user list without user "([^"]*)"$/, function(arg1, callback) {
     getUserList(callback, function(users) {
-      var found = false;
+      var matchingUser = null;
       users.forEach(function(user) {
-        if (user.email === arg1)
-          found = true;
+        if (user.email === arg1) {
+          matchingUser = user;
+        }
       });
 
-      found.should.be.false;
-      callback();
+      // If user exist, delete it
+      if (matchingUser)
+        deleteUser(callback, matchingUser.link);
+      else
+        callback();
     });
   });
 
   this.When(/^I create user "([^"]*)"$/, function(arg1, callback) {
-    // Write code here that turns the phrase above into concrete actions
-    callback.pending();
+    createUser(callback, {
+      name: arg1,
+      email: arg1
+    });
   });
 
   this.Then(/^the user list contains "([^"]*)"$/, function(arg1, callback) {
@@ -102,6 +138,56 @@ module.exports = function() {
     });
   });
 
- 
+  this.Given(/^an user list with user "([^"]*)"$/, function(arg1, callback) {
+    getUserList(callback, function(users) {
+      var found = false;
+      users.forEach(function(user) {
+        if (user.email === arg1)
+          found = true;
+      });
+
+      if (found)
+        callback();
+      else
+        createUser(callback, {
+          name: arg1,
+          email: arg1
+        });
+    });
+  });
+
+  this.When(/^I delete user "([^"]*)"$/, function(arg1, callback) {
+    getUserList(callback, function(users) {
+      var matchingUser = null;
+      users.forEach(function(user) {
+        if (user.email === arg1) {
+          matchingUser = user;
+        }
+      });
+
+      // If user exist, delete it
+      if (matchingUser)
+        deleteUser(callback, matchingUser.link);
+      else
+        callback.fail(new Error("User <"+arg1+"> not found. Cannot delete"));
+    });
+  });
+
+  this.Then(/^the user list does not contains "([^"]*)"$/, function(arg1, callback) {
+    // Write code here that turns the phrase above into concrete actions
+    callback.pending();
+  });
+
+  this.When(/^I try to create user "([^"]*)"$/, function(arg1, callback) {
+    // Write code here that turns the phrase above into concrete actions
+    callback.pending();
+  });
+
+  this.Then(/^I receive a "([^"]*)" error message$/, function(arg1, callback) {
+    // Write code here that turns the phrase above into concrete actions
+    callback.pending();
+  });
+
+
 
 };
